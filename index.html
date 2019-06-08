@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta charset="utf-8">
+	<title>Congratulations</title>
+</head>
+<body>
+
+
+	<link href="https://fonts.googleapis.com/css?family=Rouge+Script&display=swap" rel="stylesheet">
+
+	<main>
+		<canvas width="1200" height="800"></canvas>
+	</main>
+
+	<style>
+
+		/*canvas { border: 7px ridge rgb(290,10,10);}*/
+
+		main { display: flex; align-items: center; justify-content:center;}
+	</style>
+
+	<script>
+
+
+		let canvas;
+		let flowers = [];
+
+		function nonGrayColor() {
+			let r = Math.round(Math.random() * 256);
+			// let g = (r + 84)%256;
+			let g = Math.round(Math.random() * 256);
+			let b = (g  + 84)%256;
+			return 'rgb('+r+','+g+','+b+')';
+		}	
+
+		function littleHorizontalMovement() {
+			let max = 20;
+			return (Math.round(Math.random() * max)) - max/2;
+		}
+
+		function littleVerticalMovement() {
+			let min = 20;
+			return Math.round(Math.random() * min) + (min*1.4);
+		}
+
+		function circleDraw(ctx,x,y) {
+			ctx.save();
+			ctx.translate(x,y);
+			ctx.fillStyle= ctx.strokeStyle = nonGrayColor();
+			ctx.beginPath();
+			ctx.arc(0, 0, 12, 0, 2 * Math.PI, false);
+			ctx.fill();
+			ctx.stroke();
+			ctx.restore();
+		}
+
+		function flowerDraw(ctx, x, y) {
+			ctx.save();
+			ctx.translate(x,y);
+			let rot = 0;
+			// let ellColor = nonGrayColor();
+			ctx.fillStyle = ctx.strokeStyle = nonGrayColor();
+			for(let i = 0; i < 4; i++) {
+				ctx.beginPath();
+				ctx.ellipse(0, 0, 50, 10, rot, 0, 2*Math.PI, 1);
+				ctx.stroke();
+				ctx.fill();
+				rot += Math.PI/4;
+
+			}
+			ctx.fillStyle = ctx.strokeStyle = nonGrayColor();
+
+			circleDraw(ctx, 0, 0);
+			ctx.restore();
+		}
+
+		function rainFlowers(ctx) {
+			ctx.save();
+			for(let i = 0; i < flowers.length; i++) {
+				let f = flowers[i];
+				flowerDraw(ctx, f.x, f.y);
+				f.y = (f.y + littleVerticalMovement())%(Math.round(canvas.height));
+				f.x = f.x +  littleHorizontalMovement();
+			}
+			ctx.restore();
+		}
+
+		function message(ctx, m) {
+			ctx.save();
+			ctx.fillStyle = ctx.strokeStyle = 'rgb(250,40,40)';
+			ctx.font = 'bold 72px cursive';
+			ctx.fillText(m,200,canvas.height/2 - 40);
+			ctx.restore();
+		}
+
+
+		function draw() {
+			let ctx = canvas.getContext('2d');
+			ctx.imageSmoothingEnabled = true;
+			background(ctx);
+			rainFlowers(ctx);
+			message(ctx, 'Congratulations Manu !');
+			// window.requestAnimationFrame(draw);
+			setTimeout(draw, 200);
+		}
+
+		function background(ctx) {
+			ctx.save();
+			ctx.fillStyle = 'white';
+			ctx.clearRect(0,0, canvas.width, canvas.height);
+			ctx.restore();
+		}
+
+		function setup() {
+			canvas = document.querySelector('canvas');
+			// canvas.width = window.innerWidth - 20;
+			canvas.width = 1200;
+			canvas.height = window.innerHeight - 20;
+			for(let i = 0; i < 12; i++) {
+				flowers.push({'x':i*100,y:0, dx: 1, dy: 50} );
+			}
+		}
+
+		document.addEventListener('DOMContentLoaded',(e)=>{
+			setup();
+			draw();
+		});
+
+	</script>
+
+</body>
+</html>
