@@ -7,8 +7,11 @@
 </head>
 <body>
 
+	  <!-- src: local('Rouge Script'), local('RougeScript-Regular'), url(https://fonts.gstatic.com/s/rougescript/v7/LYjFdGbiklMoCIQOw1Ep3S4_U__a.woff2) format('woff2');
 
-	<link href="https://fonts.googleapis.com/css?family=Rouge+Script&display=swap" rel="stylesheet">
+ -->
+
+	<!-- <link href="https://fonts.googleapis.com/css?family=Rouge+Script&display=swap" rel="stylesheet"> -->
 
 	<main>
 		<canvas width="1200" height="800"></canvas>
@@ -26,6 +29,8 @@
 
 		let canvas;
 		let flowers = [];
+		let fontFamily = 'cursive';
+		let message = 'Congratulations Manu !';
 
 		function nonGrayColor() {
 			let r = Math.round(Math.random() * 256);
@@ -87,12 +92,19 @@
 			ctx.restore();
 		}
 
-		function message(ctx, m) {
+		function showMessage(ctx, m) {
 			ctx.save();
 			ctx.fillStyle = ctx.strokeStyle = 'rgb(250,40,40)';
 			ctx.font = 'bold 72px cursive';
 			ctx.fillText(m,200,canvas.height/2 - 40);
 			ctx.restore();
+		}
+
+		function playVoiceMessage() {
+			let su = new SpeechSynthesisUtterance();
+			su.text = message;
+			su.rate = 0.7;
+			window.speechSynthesis.speak(su);
 		}
 
 
@@ -101,7 +113,7 @@
 			ctx.imageSmoothingEnabled = true;
 			background(ctx);
 			rainFlowers(ctx);
-			message(ctx, 'Congratulations Manu !');
+			showMessage(ctx, message);
 			// window.requestAnimationFrame(draw);
 			setTimeout(draw, 200);
 		}
@@ -113,16 +125,29 @@
 			ctx.restore();
 		}
 
-		function setup() {
-			canvas = document.querySelector('canvas');
-			// canvas.width = window.innerWidth - 20;
-			canvas.width = 1200;
-			canvas.height = window.innerHeight - 20;
+		function loadCustomFont() {
+			let rougeFont = new FontFace('Rouge Script','url(https://fonts.gstatic.com/s/rougescript/v7/LYjFdGbiklMoCIQOw1Ep3S4_U__a.woff2)');
+			rougeFont.load().then((ff)=>{
+				console.log(ff);
+				console.log('loaded');
+				fontFamily = 'Rouge Script';
+			}).catch((err)=>{
+				console.log(err);
+			});
 			for(let i = 0; i < 12; i++) {
 				let initHeight = -1 * Math.round(Math.random() * 100);
 				console.log(initHeight);
 				flowers.push({'x':i*100,y: initHeight, dx: 1, dy: 50} );
 			}
+		}
+
+		function setup() {
+			canvas = document.querySelector('canvas');
+			// canvas.width = window.innerWidth - 20;
+			canvas.width = 1200;
+			canvas.height = window.innerHeight - 20;
+			loadCustomFont();
+			playVoiceMessage();
 		}
 
 		document.addEventListener('DOMContentLoaded',(e)=>{
